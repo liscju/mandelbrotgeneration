@@ -4,6 +4,11 @@
 <head>
     <title>Mandelbrot set</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <style>
+        img {
+            display: block
+        }
+    </style>
 </head>
 
 <body>

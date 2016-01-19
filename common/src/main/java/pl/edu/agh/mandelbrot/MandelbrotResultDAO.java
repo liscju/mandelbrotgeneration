@@ -32,14 +32,14 @@ public class MandelbrotResultDAO {
     public static final String UPDATE_MANDELBROT_GENERATION_RESULT_SQL =
             "UPDATE MANDELBROT_GENERATION_RESULT " +
                     "SET time_ = ?," +
-                    "SET total_time = ?," +
+                    "total_time = ?," +
                     "ended = TRUE," +
                     "image = ? " +
                     "WHERE result_id = ? AND tag = ?";
     public static final String SELECT_IF_MANDELBROT_GENERATION_HAS_ENDED_SQL =
             "SELECT COUNT(*) FROM MANDELBROT_GENERATION_RESULT WHERE tag = ? AND NOT ended;";
     public static final String SELECT_MANDELBROT_GENERATION_RESULT_SQL =
-            "SELECT * FROM MANDELBROT_GENERATION_RESULT WHERE tag = ? ORDER BY result_id ASC;";
+            "SELECT * FROM MANDELBROT_GENERATION_RESULT WHERE tag = ? ORDER BY result_id DESC;";
 
     public MandelbrotResultDAO(Connection connection) {
         this.connection = connection;

@@ -49,8 +49,8 @@ public class MandelbrotController {
 
         for(int i = 0; i < slices; ++i)
         {
-            double sliceTop = top + i * doubleHeightPerSlice;
-            double sliceBottom = sliceTop + doubleHeightPerSlice;
+            double sliceBottom = bottom + i * doubleHeightPerSlice;
+            double sliceTop = sliceBottom +  doubleHeightPerSlice;
 
             long submitTime = new Date().getTime();
             int generationRequestId =
