@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Date;
+import java.util.List;
+import java.util.Random;
 
 @Controller
 @RequestMapping("/mandelbrot")
@@ -35,38 +38,42 @@ public class MandelbrotController {
             @RequestParam(value = "bottom", required = false, defaultValue = "-1.25") double bottom,
             @RequestParam(value = "left", required = false, defaultValue = "-2") double left,
             @RequestParam(value = "precision", required = false, defaultValue = "1024") int precision,
-            Model model) throws IOException, SQLException {
+            @RequestParam(value = "slices", required = false, defaultValue = "50") int slices
+    ) throws IOException, SQLException {
         ApplicationContext context = new AnnotationConfigApplicationContext(RabbitConfiguration.class);
         AmqpTemplate amqpTemplate = context.getBean(AmqpTemplate.class);
 
-        int generationRequestId =
-                mandelbrotResultDAO.insertGenerationRequest(width, height, top, right, bottom, left, precision);
+        int tag = new Random().nextInt(1 << 30);
+        int sliceHeight = height / slices;
+        double doubleHeightPerSlice = (top - bottom) / slices;
 
-        MandelbrotGenerationRequest request =
-                new MandelbrotGenerationRequest(generationRequestId, width, height, top, right, bottom, left, precision);
-        amqpTemplate.convertAndSend(request);
+        for(int i = 0; i < slices; ++i)
+        {
+            double sliceTop = top + i * doubleHeightPerSlice;
+            double sliceBottom = sliceTop + doubleHeightPerSlice;
 
-        System.out.println("GENERATION REQUEST ID = " + generationRequestId);
-        System.out.println("Sent to RabbitMQ: " + request);
+            long submitTime = new Date().getTime();
+            int generationRequestId =
+                    mandelbrotResultDAO.insertGenerationRequest(tag,submitTime, width, sliceHeight, sliceTop, right, sliceBottom, left, precision);
+            MandelbrotGenerationRequest request =
+                    new MandelbrotGenerationRequest(generationRequestId, tag, submitTime, width, sliceHeight, sliceTop, right, sliceBottom, left, precision);
+            amqpTemplate.convertAndSend(request);
 
-        return "redirect:/mandelbrot/result?id=" + generationRequestId;
+            System.out.println("GENERATION REQUEST ID = " + generationRequestId);
+            System.out.println("Sent to RabbitMQ: " + request);
+        }
+
+        return "redirect:/mandelbrot/result?tag=" + tag;
     }
 
     @RequestMapping("result")
-    public String getResult(@RequestParam(value = "id", required = true) int id, Model model)
+    public String getResult(@RequestParam(value = "tag", required = true) int tag, Model model)
             throws SQLException {
-        if (mandelbrotResultDAO.checkIfGenerationHasEnded(id)) {
+        if (mandelbrotResultDAO.checkIfGenerationHasEnded(tag)) {
             model.addAttribute("calculated", true);
-            MandelbrotGenerationResult generationResult = mandelbrotResultDAO.getGenerationResult(id);
+            List<MandelbrotGenerationResult> generationResult = mandelbrotResultDAO.getGenerationResult(tag);
             model
-                .addAttribute("renderedImage", generationResult.getImage())
-                .addAttribute("width", generationResult.getWidth())
-                .addAttribute("height", generationResult.getHeight())
-                .addAttribute("top", generationResult.getTop())
-                .addAttribute("right", generationResult.getRight())
-                .addAttribute("bottom", generationResult.getBottom())
-                .addAttribute("left", generationResult.getLeft())
-                .addAttribute("precision", generationResult.getPrecision());
+                .addAttribute("results", generationResult);
         } else {
             model.addAttribute("calculated", false);
         }

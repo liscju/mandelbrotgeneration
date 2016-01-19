@@ -9,8 +9,12 @@
 <body>
 <c:choose>
     <c:when test="${calculated}">
-        <img alt="Mandelbrot set: (${left}, ${top}i) to (${right}, ${bottom}i). Resolution: ${width}x${height}. Iterations: ${precision}"
-             src="data:image/png;base64,${renderedImage}"/>
+        <c:forEach items="${results}" var="r">
+
+        <img alt="Mandelbrot set: (${r.left}, ${r.top}i) to (${r.right}, ${r.bottom}i). Resolution: ${r.width}x${r.height}. Iterations: ${r.precision}"
+             src="data:image/png;base64,${r.image}"/>
+        </c:forEach>
+
     </c:when>
     <c:otherwise>
         Wait for the result

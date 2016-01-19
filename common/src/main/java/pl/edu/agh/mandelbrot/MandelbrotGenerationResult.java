@@ -5,6 +5,7 @@ import java.io.Serializable;
 
 public class MandelbrotGenerationResult implements Serializable {
     private int id;
+    private int tag;
     private int width;
     private int height;
     private double top;
@@ -13,13 +14,15 @@ public class MandelbrotGenerationResult implements Serializable {
     private double left;
     private int precision;
     private boolean ended;
+    private int totalTime;
     private int time;
     private String image;
 
-    public MandelbrotGenerationResult(int id, int width, int height, double top, double right,
+    public MandelbrotGenerationResult(int id, int tag, int width, int height, double top, double right,
                                       double bottom, double left, int precision, boolean ended,
-                                      int time, String image) {
+                                      int totalTime, int time, String image) {
         this.id = id;
+        this.tag = tag;
         this.width = width;
         this.height = height;
         this.top = top;
@@ -28,12 +31,18 @@ public class MandelbrotGenerationResult implements Serializable {
         this.left = left;
         this.precision = precision;
         this.ended = ended;
+        this.totalTime = totalTime;
         this.time = time;
         this.image = image;
     }
 
     public int getId() {
         return id;
+    }
+
+    public int getTag()
+    {
+        return tag;
     }
 
     public int getWidth() {
@@ -68,6 +77,11 @@ public class MandelbrotGenerationResult implements Serializable {
         return ended;
     }
 
+    public int getTotalTime()
+    {
+        return totalTime;
+    }
+
     public int getTime() {
         return time;
     }
@@ -84,6 +98,7 @@ public class MandelbrotGenerationResult implements Serializable {
         MandelbrotGenerationResult that = (MandelbrotGenerationResult) o;
 
         if (id != that.id) return false;
+        if (tag != that.tag) return false;
         if (width != that.width) return false;
         if (height != that.height) return false;
         if (Double.compare(that.top, top) != 0) return false;
@@ -92,6 +107,7 @@ public class MandelbrotGenerationResult implements Serializable {
         if (Double.compare(that.left, left) != 0) return false;
         if (precision != that.precision) return false;
         if (ended != that.ended) return false;
+        if (totalTime != that.totalTime) return false;
         if (time != that.time) return false;
         if (image != null ? !image.equals(that.image) : that.image != null) return false;
 
@@ -103,6 +119,7 @@ public class MandelbrotGenerationResult implements Serializable {
         int result;
         long temp;
         result = id;
+        result = 31 * result + tag;
         result = 31 * result + width;
         result = 31 * result + height;
         temp = Double.doubleToLongBits(top);
@@ -115,6 +132,7 @@ public class MandelbrotGenerationResult implements Serializable {
         result = 31 * result + (int) (temp ^ (temp >>> 32));
         result = 31 * result + precision;
         result = 31 * result + (ended ? 1 : 0);
+        result = 31 * result + totalTime;
         result = 31 * result + time;
         result = 31 * result + (image != null ? image.hashCode() : 0);
         return result;
@@ -124,6 +142,7 @@ public class MandelbrotGenerationResult implements Serializable {
     public String toString() {
         return "MandelbrotGenerationResult{" +
                 "id=" + id +
+                ", tag=" + tag +
                 ", width=" + width +
                 ", height=" + height +
                 ", top=" + top +
@@ -132,6 +151,7 @@ public class MandelbrotGenerationResult implements Serializable {
                 ", left=" + left +
                 ", precision=" + precision +
                 ", ended=" + ended +
+                ", totalTime=" + totalTime +
                 ", time=" + time +
                 ", image='" + image + '\'' +
                 '}';

@@ -7,6 +7,8 @@ public class MandelbrotGenerationRequest implements Serializable {
     private static final long serialVersionUID = -403250971215465050L;
 
     private int id;
+    private int tag;
+    private long submitTime;
     private int width;
     private int height;
     private double top;
@@ -15,8 +17,10 @@ public class MandelbrotGenerationRequest implements Serializable {
     private double left;
     private int precision;
 
-    public MandelbrotGenerationRequest(int id, int width, int height, double top, double right, double bottom, double left, int precision) {
+    public MandelbrotGenerationRequest(int id, int tag, long submitTime, int width, int height, double top, double right, double bottom, double left, int precision) {
         this.id = id;
+        this.tag = tag;
+        this.submitTime = submitTime;
         this.width = width;
         this.height = height;
         this.top = top;
@@ -28,6 +32,16 @@ public class MandelbrotGenerationRequest implements Serializable {
 
     public int getId() {
         return id;
+    }
+
+    public int getTag()
+    {
+        return tag;
+    }
+
+    public long getSubmitTime()
+    {
+        return submitTime;
     }
 
     public int getWidth() {
@@ -66,6 +80,8 @@ public class MandelbrotGenerationRequest implements Serializable {
         MandelbrotGenerationRequest that = (MandelbrotGenerationRequest) o;
 
         if (id != that.id) return false;
+        if (tag != that.tag) return false;
+        if (submitTime!= that.submitTime) return false;
         if (width != that.width) return false;
         if (height != that.height) return false;
         if (Double.compare(that.top, top) != 0) return false;
@@ -82,6 +98,8 @@ public class MandelbrotGenerationRequest implements Serializable {
         int result;
         long temp;
         result = id;
+        result = 31 * result + tag;
+        result = 31 * result + (int) (submitTime ^ (submitTime >>> 32));
         result = 31 * result + width;
         result = 31 * result + height;
         temp = Double.doubleToLongBits(top);
@@ -100,6 +118,8 @@ public class MandelbrotGenerationRequest implements Serializable {
     public String toString() {
         return "MandelbrotGenerationRequest{" +
                 "id=" + id +
+                ", tag=" + tag +
+                ", submitTime=" + submitTime +
                 ", width=" + width +
                 ", height=" + height +
                 ", top=" + top +

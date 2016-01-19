@@ -39,6 +39,8 @@ public class MandelbrotGenerationWorker {
                         (MandelbrotGenerationRequest) messageConverter.fromMessage(message);
 
                 int id = generationRequest.getId();
+                int tag = generationRequest.getTag();
+                long submitTime = generationRequest.getSubmitTime();
                 int precision = generationRequest.getPrecision();
                 int width = generationRequest.getWidth();
                 int height = generationRequest.getHeight();
@@ -54,8 +56,9 @@ public class MandelbrotGenerationWorker {
                     String image = new MandelbrotRenderer().render(mandelbrotSet, precision);
                     long endOfTime = System.currentTimeMillis();
 
-                    long totalTime = endOfTime - startOfTime;
-                    mandelbrotResultDAO.insertGenerationResult(id, (int) totalTime, image);
+                    long time = endOfTime - startOfTime;
+                    long totalTime = endOfTime - submitTime;
+                    mandelbrotResultDAO.insertGenerationResult(id,tag, (int) time, (int) totalTime, image);
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (SQLException e) {
